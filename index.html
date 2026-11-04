@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keylogger Log Viewer</title>
+    <style>
+        body {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #38bdf8;
+            font-size: 1.5rem;
+            margin-top: 0;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 12px;
+        }
+        pre {
+            background: #090d16;
+            color: #34d399;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap; /* Giữ nguyên xuống dòng của text */
+            word-wrap: break-word;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            border: 1px solid #334155;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nội dung ghi nhận từ Client</h1>
+        <!-- Dữ liệu từ server sẽ được nhúng tự động vào đây -->
+        <pre>{{LOG_CONTENT}}</pre>
+    </div>
+</body>
+</html>
