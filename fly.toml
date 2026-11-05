@@ -1,15 +1,25 @@
-app = "basic-server-nodejs"
-primary_region = "sin" # Hoặc khu vực gần bạn (Singapore)
+# fly.toml app configuration file generated for basic-server-nodejs-rjrxmq on 2026-11-05T03:52:08Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'basic-server-nodejs-rjrxmq'
+primary_region = 'ams'
 
 [build]
+[processes]
+  app = 'node server.js'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
-[processes]
-  app = "node server.js"
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
