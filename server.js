@@ -52,26 +52,6 @@ app.post("/", (req, res) => {
     }
 });
 
-app.post("/", (req, res) => {
-    try {
-        const content = req.body.context || "";
-        if (!content.trim()) {
-            return res.status(200).send({ status: "ignored" });
-        }
-
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('vi-VN') + " " + now.toLocaleDateString('vi-VN');
-
-        const logEntry = `[${timeString}] ${content}\n`;
-
-        fs.appendFileSync("keyboard_capture.txt", logEntry);
-        res.status(200).send("Successfully set the data");
-    } catch (error) {
-        console.error("Lỗi ghi file:", error);
-        res.status(500).send("Error saving data");
-    }
-});
-
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`);
 });
