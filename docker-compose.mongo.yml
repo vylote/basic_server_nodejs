@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongodb_keylogger
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017" # Chỉ cho phép localhost truy cập (bảo mật)
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: keylogger_db
+    volumes:
+      - mongo_data:/data/db
+      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro # Tự động chạy script khởi tạo
+
+volumes:
+  mongo_data:
